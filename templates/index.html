@@ -1,0 +1,71 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Positive Messages</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='index.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css">
+    
+</head>
+<body>
+    <h1>Welcome to the Positive Messages App</h1>
+
+    <form method="post" action="{{ url_for('post_message') }}">
+        <label for="message">Message:</label>
+        <input type="text" name="message" required>
+        <button type="submit">Post</button>
+    </form>
+
+
+    {% if warning_message %}
+    <div style="color: red; margin-top: 10px;">{{ warning_message }}</div>
+    {% endif %}
+
+    <h2>Messages</h2>
+    <ul>
+        {% set grouped_messages = {} %}
+        {% for message in messages %}
+            {% set username = message.username %}
+            {% if grouped_messages.get(username) %}
+                {% set _ = grouped_messages[username].append(message) %}
+            {% else %}
+                {% set _ = grouped_messages.update({username: [message]}) %}
+            {% endif %}
+        {% endfor %}
+
+        {% for username, user_messages in grouped_messages.items() %}
+            <li class="grouped-messages">
+                <strong>{{ username }}</strong>:
+                {% for message in user_messages %}
+                    <div class="grouped-message">
+                        {{ message.message }}
+                        <span class="like-button" onclick="likePost('{{ username }}', {{ loop.index0 }})">
+                            <i class="fas fa-thumbs-up"></i> Like
+                        </span>
+                        <span id="likes{{ username }}_{{ loop.index0 }}">Likes: {{ message.likes }}</span>
+                    </div>
+                {% endfor %}
+            </li>
+        {% endfor %}
+    </ul>
+
+    {% if current_user.is_authenticated %}
+        <p>Logged in as {{ current_user.username }} | <a href="{{ url_for('logout') }}">Logout</a></p>
+    {% else %}
+        <p><a href="{{ url_for('login') }}">Login</a></p>
+    {% endif %}
+
+
+    <script>
+        function likePost(username, messageIndex) {
+            // Your JavaScript functions here
+            // For simplicity, let's increment the likes count by 1 for each click
+            var likesElement = document.getElementById('likes' + username + '_' + messageIndex);
+            var currentLikes = parseInt(likesElement.innerText.split(' ')[1]);
+            likesElement.innerText = 'Likes: ' + (currentLikes + 1);
+        }
+    </script>
+</body>
+</html>
