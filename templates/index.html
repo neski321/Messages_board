@@ -43,11 +43,9 @@
                     <div class="grouped-message">
                         {{ message.message }}
                         {% if current_user.is_authenticated %}
-                            <span class="like-button" onclick="likePost('{{ username }}', '{{ message.message_id }}')"><br />
-                                <i class="fas fa-thumbs-up"></i>
-                            </span>
+                           
                         {% endif %}
-                        <span id="likes{{ message.key }}"> Likes: {{ likes_map.get(message.key, 0) }}</span>
+                        
                     </div>
                 {% endfor %}
             </li>
@@ -61,17 +59,17 @@
     {% endif %}
 
     <script>
-        function likePost(messageKey) {
+    //    function likePost(messageKey) {
             // Send an AJAX request to the Flask server to update likes
-            fetch(`/like/${messageKey}`)
-                .then(response => response.json())
-                .then(data => {
+      //      fetch(`/like/${messageKey}`)
+        //        .then(response => response.json())
+          //      .then(data => {
                     // Update the likes count in the UI
-                    var likesElement = document.getElementById('likes' + messageKey);
-                    likesElement.innerText = 'Likes: ' + data.likes;
-                })
-                .catch(error => console.error('Error:', error));
-        }
+            //        var likesElement = document.getElementById('likes' + messageKey);
+              //      likesElement.innerText = 'Likes: ' + data.likes;
+                //})
+                //.catch(error => console.error('Error:', error));
+        //}
     </script>
 </body>
 </html>

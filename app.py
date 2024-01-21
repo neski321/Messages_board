@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pyrebase
 from dotenv import load_dotenv
@@ -137,7 +137,7 @@ def login():
             print(e)
             flash('Invalid email or password. Please try again.', 'error')
 
-    return render_template('login.html', error_message=session.pop('_flashes', []))
+    return render_template('login.html')
 
 
 @app.route('/logout')
@@ -153,11 +153,6 @@ def register():
         password = request.form['password']
 
         try:
-            existing_user = auth.get_account_info(email)
-            if existing_user:
-                flash('Email already exists. Please use a different email.', 'error')
-                return redirect(url_for('register'))
-            
             # Create user in Pyrebase authentication
             user = auth.create_user_with_email_and_password(email, password)
             user_id = user['localId']
@@ -171,7 +166,7 @@ def register():
             print(e)
             flash('Registration failed. Please try again later.', 'error')
 
-    return render_template('register.html', error_message=session.pop('_flashes', []))
+    return render_template('register.html')
 
 
 if __name__ == '__main__':
