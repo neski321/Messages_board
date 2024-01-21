@@ -1,5 +1,5 @@
 # app.py
-from flask import Flask, jsonify, render_template, request, redirect, url_for, flash
+from flask import Flask, jsonify, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 import pyrebase
 from dotenv import load_dotenv
@@ -72,9 +72,15 @@ def index():
     messages_data = db.child('messages').get().val() or {}
 
     # Convert messages_data to a list of Message objects
-    messages = [Message(message_data['username'], message_data['message'], message_data['likes'], key) for key, message_data in messages_data.items()]
+    messages = [Message(message_data['username'], message_data['message'], key) for key, message_data in messages_data.items()]
 
-    return render_template('index.html', messages=messages, warning_message=None, current_user=current_user)
+    # Retrieve likes from the database
+    likes_data = db.child('likes').get().val() or {}
+
+    # Map likes count to the corresponding message key
+    likes_map = {key: likes_data.get(key, 0) for key in messages_data.keys()}
+
+    return render_template('index.html', messages=messages, likes_map=likes_map, warning_message=None, current_user=current_user)
 
 @app.route('/post_message', methods=['POST'])
 @login_required
@@ -100,11 +106,13 @@ def post_message():
 @login_required
 def like(message_key):
     # Update the likes count for the specified message key in the database
-    db.child('messages').child(message_key).child('likes').transaction(lambda current_likes: (current_likes or 0) + 1)
+    likes_ref = db.child('likes').child(message_key)
+    current_likes = likes_ref.get().val() or 0
+    new_likes = current_likes + 1
+    likes_ref.set(new_likes)
 
-    # Redirect to the home page
-    return redirect(url_for('index'))
-
+    # Return the updated likes count as JSON
+    return jsonify({'likes': new_likes})
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -120,16 +128,16 @@ def login():
             user_data = db.child('users').child(user_id).get().val()
 
             if user_data:
-                login_user(User(user_id))
+                login_user(User(user_id, email))
                 return redirect(url_for('index'))
             else:
-                flash('User does not exist. Redirecting to registration page.', 'error')
+                flash('User does not exist. Please register.', 'error')
                 return redirect(url_for('register'))
         except Exception as e:
             print(e)
-            flash('Invalid username or password. Please try again.', 'error')
+            flash('Invalid email or password. Please try again.', 'error')
 
-    return render_template('login.html')
+    return render_template('login.html', error_message=session.pop('_flashes', []))
 
 
 @app.route('/logout')
@@ -145,6 +153,11 @@ def register():
         password = request.form['password']
 
         try:
+            existing_user = auth.get_account_info(email)
+            if existing_user:
+                flash('Email already exists. Please use a different email.', 'error')
+                return redirect(url_for('register'))
+            
             # Create user in Pyrebase authentication
             user = auth.create_user_with_email_and_password(email, password)
             user_id = user['localId']
@@ -158,7 +171,7 @@ def register():
             print(e)
             flash('Registration failed. Please try again later.', 'error')
 
-    return render_template('register.html')
+    return render_template('register.html', error_message=session.pop('_flashes', []))
 
 
 if __name__ == '__main__':

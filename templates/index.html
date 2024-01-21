@@ -47,7 +47,7 @@
                                 <i class="fas fa-thumbs-up"></i>
                             </span>
                         {% endif %}
-                        <span id="likes{{ message.message_id }}"> Likes: {{ message.likes }}</span>
+                        <span id="likes{{ message.key }}"> Likes: {{ likes_map.get(message.key, 0) }}</span>
                     </div>
                 {% endfor %}
             </li>
@@ -61,12 +61,16 @@
     {% endif %}
 
     <script>
-        function likePost(username, messageId) {
-            
-            // let's increment the likes count by 1 for each click
-            var likesElement = document.getElementById('likes' + messageId);
-            var currentLikes = parseInt(likesElement.innerText.split(' ')[1]);
-            likesElement.innerText = 'Likes: ' + (currentLikes + 1);
+        function likePost(messageKey) {
+            // Send an AJAX request to the Flask server to update likes
+            fetch(`/like/${messageKey}`)
+                .then(response => response.json())
+                .then(data => {
+                    // Update the likes count in the UI
+                    var likesElement = document.getElementById('likes' + messageKey);
+                    likesElement.innerText = 'Likes: ' + data.likes;
+                })
+                .catch(error => console.error('Error:', error));
         }
     </script>
 </body>

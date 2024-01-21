@@ -15,6 +15,9 @@
         <input type="password" name="password" required>
         <button type="submit">Register</button>
     </form>
+        {% for message in error_message %}
+            <div style="color: red;">{{ message }}</div>
+        {% endfor %}
     <p>Already have an account? <a href="{{ url_for('login') }}">Log in</a></p>
 </body>
 </html>
