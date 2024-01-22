@@ -1,8 +1,14 @@
 body {
-    font-family: 'Arial', sans-serif;
+    background-image: url("/static/vecteezy_grupo-de-pessoas-com-os-bracos-erguidos-e-dar-a-mao-a-forma_2910475.jpg");
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 25px;
     background-color: #f7f7f7;
-    color: #333;
+    color: #ffffff;
     margin: 20px;
+    height: 100vh;
 }
 
 h1, h2 {
