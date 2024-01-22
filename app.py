@@ -44,7 +44,7 @@ class Message:
         self.likes = likes
         self.key = key
 
-prohibited_words = ['hate', 'offensive', 'inappropriate']  # Add more words as needed
+prohibited_words = ['hate', 'offensive', 'inappropriate', 'dumb', 'stupid', 'fuck', 'bitch', 'asshole']  # Add more words as needed
 
 def contains_prohibited_word(message):
     for word in prohibited_words:
@@ -90,7 +90,7 @@ def post_message():
 
     # Check if the message contains prohibited words
     if contains_prohibited_word(message_text):
-        flash("Your message contains prohibited words. Please be respectful.", 'error')
+        flash("Your message contains words that may considered offensive. Please be respectful.", 'error')
     else:
         # Add the message to the database
         new_message_ref = db.child('messages').push({

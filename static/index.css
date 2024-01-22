@@ -83,3 +83,13 @@ a:hover {
 .grouped-message {
     margin-bottom: 5px;
 }
+.flashes {
+    margin-top: 10px;
+}
+
+.flash-message {
+    color: red;
+    padding: 5px;
+    border: 1px solid #ccc;
+    margin-bottom: 5px;
+}

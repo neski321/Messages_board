@@ -20,9 +20,15 @@
         <p>Login to post messages and like posts.</p>
     {% endif %}
 
-    {% if warning_message %}
-    <div style="color: red; margin-top: 10px;">{{ warning_message }}</div>
-    {% endif %}
+        {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            <div class="flashes">
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+    {% endwith %}
 
     <h2>Messages</h2>
     <ul>
@@ -58,18 +64,5 @@
         <p><a href="{{ url_for('login') }}">Login</a></p>
     {% endif %}
 
-    <script>
-    //    function likePost(messageKey) {
-            // Send an AJAX request to the Flask server to update likes
-      //      fetch(`/like/${messageKey}`)
-        //        .then(response => response.json())
-          //      .then(data => {
-                    // Update the likes count in the UI
-            //        var likesElement = document.getElementById('likes' + messageKey);
-              //      likesElement.innerText = 'Likes: ' + data.likes;
-                //})
-                //.catch(error => console.error('Error:', error));
-        //}
-    </script>
 </body>
 </html>
