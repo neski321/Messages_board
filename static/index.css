@@ -93,3 +93,13 @@ a:hover {
     border: 1px solid #ccc;
     margin-bottom: 5px;
 }
+.logged-in-user {
+    color: #008080;
+    font-weight: bold;
+}
+.logout{
+    color: #fd0404;
+    font-weight: bold;
+    text-decoration: none;
+    margin-left: 10px;
+}
